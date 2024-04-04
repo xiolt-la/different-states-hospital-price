@@ -1,4 +1,8 @@
-# hospital-price-transparency
-link of data: https://www.dolthub.com/repositories/dolthub/hospital-price-transparency
+# different-states-hospital-price
 
-link of dictionary: https://www.dolthub.com/repositories/dolthub/hospital-price-transparency/doc/maste
+1) Business Process
+2) Requirements For data of all states, I want know the Prices at hospitals in different states
+3) Get Data and Profiling the Data Include for each hospital care, the price of care, the state of each hosptial.
+    find the avg() of each state's hospital care price
+4) Source: dolthub database [hospital-price-transparency](https://www.dolthub.com/repositories/dolthub/hospital-price-transparency/data/master)
+5) Dimensional Modeling
