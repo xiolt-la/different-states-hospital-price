@@ -1,185 +1,71 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<project name="MySql" id="MySql-11ae" database="MySql" >
-	<schema name="hospital-price-transparency" >
-		<table name="cpt_hcpcs" row_count="3287818" spec="" >
+<project name="different-states-hospital-price" id="LogicalDesign-206" database="LogicalDesign" >
+	<schema name="INSTANCE" catalogname="different-states-hospital-price" >
+		<table name="DimCptHcpcs" prior="Entity" >
+			<column name="cpt_id" type="INT" jt="4" mandatory="y" />
 			<column name="code" type="VARCHAR" length="32" jt="12" mandatory="y" />
 			<column name="short_description" type="VARCHAR" length="128" jt="12" />
 			<column name="long_description" type="VARCHAR" length="2048" jt="12" />
-			<index name="pk_cpt_hcpcs" unique="PRIMARY_KEY" >
-				<column name="code" />
+			<index name="pk_DimCptHcpcs" unique="PRIMARY_KEY" >
+				<column name="cpt_id" />
 			</index>
-			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin]]></options>
 		</table>
-		<table name="dim_cpt_hcpcs" >
-			<column name="code" type="VARCHAR" length="32" jt="12" />
-			<column name="cpt_hcpcs_id" type="BIGINT" jt="-5" mandatory="y" />
-			<column name="short_description" prior="shortdescription" type="VARCHAR" length="128" jt="12" />
-			<column name="long_description" type="VARCHAR" length="2048" jt="12" />
-			<index name="pk_dim_cpt_hcpcs" unique="PRIMARY_KEY" >
-				<column name="cpt_hcpcs_id" />
-			</index>
-			<options><![CDATA[engine=InnoDB]]></options>
-		</table>
-		<table name="dim_hospitals" prior="dim_hsopitals" >
-			<column name="npi_number" type="CHAR" length="16" jt="1" />
-			<column name="hospitals_id" type="BIGINT" jt="-5" mandatory="y" />
+		<table name="DimHospitals" prior="Entity" >
+			<column name="hospital_id" type="INT" jt="4" mandatory="y" />
+			<column name="npi_number" type="INT" jt="4" mandatory="y" />
 			<column name="name" type="VARCHAR" length="256" jt="12" />
 			<column name="url" type="VARCHAR" length="512" jt="12" />
 			<column name="street_address" type="VARCHAR" length="512" jt="12" />
 			<column name="city" type="VARCHAR" length="64" jt="12" />
 			<column name="state" type="VARCHAR" length="32" jt="12" />
 			<column name="zip_code" type="VARCHAR" length="16" jt="12" />
-			<column name="publish_date" type="DATE" jt="91" />
-			<index name="pk_dim_hsopitals" unique="PRIMARY_KEY" >
-				<column name="hospitals_id" />
+			<index name="pk_DimHospitals" unique="PRIMARY_KEY" >
+				<column name="hospital_id" />
 			</index>
-			<options><![CDATA[engine=InnoDB]]></options>
 		</table>
-		<table name="dim_payer" >
-			<column name="payer_id" type="BIGINT" jt="-5" mandatory="y" />
-			<column name="payer" type="VARCHAR" length="128" jt="12" />
-			<index name="pk_dim_payer" unique="PRIMARY_KEY" >
+		<table name="DimPayer" prior="Entity" >
+			<column name="payer_id" type="INT" jt="4" mandatory="y" />
+			<column name="payer" type="VARCHAR" length="128" jt="12" mandatory="y" />
+			<index name="pk_DimPayer" unique="PRIMARY_KEY" >
 				<column name="payer_id" />
 			</index>
-			<options><![CDATA[engine=InnoDB]]></options>
 		</table>
-		<table name="fact_prices" >
-			<column name="fact_id" type="BIGINT" jt="-5" mandatory="y" />
+		<table name="FactPrices" prior="Fact" >
+			<column name="fact_id" prior="price_id" type="INT" jt="4" mandatory="y" />
+			<column name="cpt_id" type="INT" jt="4" mandatory="y" />
+			<column name="hospital_id" type="INT" jt="4" mandatory="y" />
+			<column name="payer_id" type="INT" jt="4" mandatory="y" />
 			<column name="price" type="DECIMAL" length="65" decimal="2" jt="3" />
-			<column name="cpt_hcpcs_id" type="BIGINT" jt="-5" />
-			<column name="hospitals_id" type="BIGINT" jt="-5" />
-			<column name="payer_id" type="BIGINT" jt="-5" />
-			<index name="pk_fact_prices" unique="PRIMARY_KEY" >
+			<index name="pk_FactPrices" unique="PRIMARY_KEY" >
 				<column name="fact_id" />
+				<column name="cpt_id" />
+				<column name="hospital_id" />
 			</index>
-			<fk name="fk_fact_prices_dim_cpt_hcpcs" to_schema="hospital-price-transparency" to_table="dim_cpt_hcpcs" >
-				<fk_column name="cpt_hcpcs_id" pk="cpt_hcpcs_id" />
-			</fk>
-			<fk name="fk_fact_prices_dim_hospitals" to_schema="hospital-price-transparency" to_table="dim_hospitals" >
-				<fk_column name="hospitals_id" pk="hospitals_id" />
-			</fk>
-			<fk name="fk_fact_prices_dim_payer" to_schema="hospital-price-transparency" to_table="dim_payer" >
+			<index name="unq_payer_id" unique="UNIQUE_INDEX" >
+				<column name="payer_id" />
+			</index>
+			<fk name="fk_FactPrices_DimPayer" to_schema="different-states-hospital-price.INSTANCE" to_table="DimPayer" type="Identifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
 				<fk_column name="payer_id" pk="payer_id" />
 			</fk>
-			<options><![CDATA[engine=InnoDB]]></options>
-		</table>
-		<table name="hospitals" row_count="1400" spec="" >
-			<column name="npi_number" type="CHAR" length="16" jt="1" mandatory="y" />
-			<column name="name" type="VARCHAR" length="256" jt="12" />
-			<column name="url" type="VARCHAR" length="512" jt="12" />
-			<column name="street_address" type="VARCHAR" length="512" jt="12" />
-			<column name="city" type="VARCHAR" length="64" jt="12" />
-			<column name="state" type="VARCHAR" length="32" jt="12" />
-			<column name="zip_code" type="VARCHAR" length="16" jt="12" />
-			<column name="publish_date" type="DATE" jt="91" />
-			<index name="pk_hospitals" unique="PRIMARY_KEY" >
-				<column name="npi_number" />
-			</index>
-			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin]]></options>
-		</table>
-		<table name="prices" row_count="72724852" spec="" >
-			<column name="code" type="VARCHAR" length="32" jt="12" mandatory="y" />
-			<column name="npi_number" type="CHAR" length="16" jt="1" mandatory="y" />
-			<column name="payer" type="VARCHAR" length="128" jt="12" mandatory="y" />
-			<column name="price" type="DECIMAL" length="65" decimal="2" jt="3" />
-			<index name="pk_prices" unique="PRIMARY_KEY" >
-				<column name="code" />
-				<column name="npi_number" />
-				<column name="payer" />
-			</index>
-			<fk name="c2h9tku4" to_schema="hospital-price-transparency" to_table="cpt_hcpcs" options="" >
-				<fk_column name="code" pk="code" />
+			<fk name="fk_FactPrices_DimCptHcpcs" to_schema="different-states-hospital-price.INSTANCE" to_table="DimCptHcpcs" type="Identifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="cpt_id" pk="cpt_id" />
 			</fk>
-			<fk name="nulp8u6m" to_schema="hospital-price-transparency" to_table="hospitals" options="" >
-				<fk_column name="npi_number" pk="npi_number" />
+			<fk name="fk_FactPrices_DimHospitals" to_schema="different-states-hospital-price.INSTANCE" to_table="DimHospitals" type="Identifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
+				<fk_column name="hospital_id" pk="hospital_id" />
 			</fk>
-			<options><![CDATA[ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_bin]]></options>
 		</table>
 	</schema>
-	<layout name="Main Layout" id="Layout-66" confirmed="y" show_relation="columns" >
-		<entity schema="hospital-price-transparency" name="cpt_hcpcs" color="BED3F4" x="256" y="224" />
-		<entity schema="hospital-price-transparency" name="hospitals" color="BED3F4" x="256" y="432" />
-		<entity schema="hospital-price-transparency" name="prices" color="BED3F4" x="48" y="224" />
-		<callout x="48" y="80" pointer="Round" >
-			<comment><![CDATA[This is a layout. You can create multiple layouts with the same or different tables. 
-
-Edit tables by double-clicking the table headers.]]></comment>
+	<layout name="Default Layout" id="Layout-e77" show_relation="columns" >
+		<entity schema="different-states-hospital-price.INSTANCE" name="DimCptHcpcs" color="C1D8EE" x="320" y="320" />
+		<entity schema="different-states-hospital-price.INSTANCE" name="DimHospitals" color="C1D8EE" x="560" y="480" />
+		<entity schema="different-states-hospital-price.INSTANCE" name="DimPayer" color="C1D8EE" x="784" y="304" />
+		<entity schema="different-states-hospital-price.INSTANCE" name="FactPrices" color="C1D8EE" x="576" y="288" />
+		<callout x="48" y="48" pointer="Round" >
+			<comment><![CDATA[This is a layout - a diagram with tools.
+- Create new entities by right-clicking the layout. 
+- Double-click entity headers to edit.
+- For a better understanding of the schema, create multiple layouts.
+- Deploy the model into the database by converting it first to the physical design.]]></comment>
 		</callout>
-		<group name="prices" color="ECF0F7" >
-			<entity schema="hospital-price-transparency" name="prices" />
-			<entity schema="hospital-price-transparency" name="cpt_hcpcs" />
-			<entity schema="hospital-price-transparency" name="hospitals" />
-		</group>
-	</layout>
-	<layout name="dimensional modeling" id="Layout-682" show_relation="columns" >
-		<entity schema="hospital-price-transparency" name="dim_cpt_hcpcs" color="C1D8EE" x="208" y="48" />
-		<entity schema="hospital-price-transparency" name="dim_hospitals" color="C1D8EE" x="448" y="80" />
-		<entity schema="hospital-price-transparency" name="dim_payer" color="C1D8EE" x="48" y="256" />
-		<entity schema="hospital-price-transparency" name="fact_prices" color="C1D8EE" x="224" y="224" />
-	</layout>
-	<layout name="~Layout with Sample Tools" id="Layout-19fc" confirmed="y" show_column_type="y" show_relation="columns" >
-		<entity schema="hospital-price-transparency" name="cpt_hcpcs" color="BED3F4" x="304" y="48" />
-		<entity schema="hospital-price-transparency" name="hospitals" color="BED3F4" x="304" y="256" />
-		<entity schema="hospital-price-transparency" name="prices" color="BED3F4" x="48" y="48" />
-		<script name="SQL Editor" id="Editor-eb" language="SQL" >
-			<string><![CDATA[SELECT
-	code, npi_number, payer, price
-FROM
-	`hospital-price-transparency`.prices s;]]></string>
-		</script>
-		<browser id="Browse-afe" name="Relational Data Explorer" confirm_updates="y" >
-			<browse_table schema="hospital-price-transparency" entity="prices" x="-2147483648" y="-2147483648" width="-2147483648" height="-2147483648" >
-				<browse_table schema="hospital-price-transparency" entity="cpt_hcpcs" fk="c2h9tku4" x="40" y="-2147483648" width="500" height="350" record_view="y" />
-			</browse_table>
-		</browser>
-		<form name="Report" id="Report-15b3" template="Page" css="container-fluid" view="frame" >
-			<var name="samplePageNumber" type="4" value="0" mandatory="n" />
-			<var name="sampleRecordsPerPage" type="4" value="100" mandatory="n" />
-			<body name="Body" template="Grid" max_records="100" pos="0,0,0,0,f,f" layout="{{-2,-2,-2,-2,-1},{-2,-2,-2,-2}}" generate_path="y" scroll="n" html="n" header_rows="0" footer_rows="0" >
-				<cell type="label" name="Prices Data" template="H3" pos="0,0,1,0,l,c" />
-				<cell type="chart" name="Pie" template="Pie" pos="0,1,4,1,l,c" max_records="20" generate_path="y" >
-					<form_script type="DataSource" language="SQL" >
-						<var name="code" />
-						<var name="npi_number" type="1" />
-						<var name="payer" />
-						<var name="price" type="3" />
-						<script ><![CDATA[SELECT * FROM `hospital-price-transparency`.prices]]></script>
-					</form_script>
-					<param name="item" value="payer" />
-					<param name="width" value="100%" />
-					<param name="title" value="Sample Chart" />
-					<param name="value" value="price" />
-					<param name="height" value="400px" />
-				</cell>
-				<tableview name="sample" template="Table" max_records="100" css="sortable table table-striped table-sm table-hover" pos="0,2,4,2,f,f" layout="{{-2,-2,-2,-2,-2},{-2,-2}}" generate_path="y" scroll="n" html="n" header_rows="1" footer_rows="0" >
-					<form_script type="DataSource" language="SQL" >
-						<var name="code" />
-						<var name="npi_number" type="1" />
-						<var name="payer" />
-						<var name="price" type="3" />
-						<script ><![CDATA[SELECT * FROM `hospital-price-transparency`.prices]]></script>
-					</form_script>
-					<cell type="label" name="code" pos="0,0,0,0,c,c" />
-					<cell type="label" name="npi_number" pos="1,0,1,0,c,c" />
-					<cell type="label" name="payer" pos="2,0,2,0,c,c" />
-					<cell type="label" name="price" pos="3,0,3,0,c,c" />
-					<cell type="label" name="${code}" template="Plain" pos="0,1,0,1,l,c" />
-					<cell type="label" name="${npi_number}" template="Plain" pos="1,1,1,1,l,c" />
-					<cell type="label" name="${payer}" template="Plain" pos="2,1,2,1,l,c" />
-					<cell type="label" name="${price}" template="Plain" pos="3,1,3,1,l,c" />
-					<cell type="button" name="More" template="Plain" css="btn btn-sm btn-secondary" pos="4,1,4,1,c,c" ref_id="Report-15b3" />
-				</tableview>
-				<cell type="href" name="" disabled="${samplePageNumber&lt;1}" pos="0,3,0,3,l,c" glyph="bi-chevron_double_left" ref_id="Report-15b3" >
-					<var name="samplePageNumber" value="0" />
-				</cell>
-				<cell type="href" name="" disabled="${samplePageNumber&lt;1}" pos="1,3,1,3,l,c" glyph="bi-chevron_left" ref_id="Report-15b3" >
-					<var name="samplePageNumber" value="${Math.max(0,samplePageNumber-1)}" />
-				</cell>
-				<cell type="label" name="Page ${samplePageNumber+1}" pos="2,3,2,3,l,c" />
-				<cell type="href" name="" disabled="${!sampleHasNextPage}" pos="3,3,3,3,l,c" glyph="bi-chevron_right" ref_id="Report-15b3" >
-					<var name="samplePageNumber" value="${( samplePageNumber+1 )}" />
-				</cell>
-			</body>
-		</form>
 	</layout>
 </project>
