@@ -36,16 +36,13 @@
 			<column name="hospital_id" type="INT" jt="4" mandatory="y" />
 			<column name="payer_id" type="INT" jt="4" mandatory="y" />
 			<column name="price" type="DECIMAL" length="65" decimal="2" jt="3" />
-			<index name="pk_FactPrices" unique="UNIQUE_KEY" >
+			<index name="pk_FactPrices" unique="PRIMARY_KEY" >
 				<column name="fact_id" />
 				<column name="cpt_id" />
 				<column name="hospital_id" />
 			</index>
 			<index name="unq_payer_id" unique="UNIQUE_INDEX" >
 				<column name="payer_id" />
-			</index>
-			<index name="pk_FactPrices_0" unique="PRIMARY_KEY" >
-				<column name="fact_id" />
 			</index>
 			<fk name="fk_FactPrices_DimPayer" to_schema="different-states-hospital-price.INSTANCE" to_table="DimPayer" type="Identifying" mandatory="y" cardinality="OneMore" range_from="0" range_to="0" >
 				<fk_column name="payer_id" pk="payer_id" />
