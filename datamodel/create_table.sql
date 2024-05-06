@@ -1,33 +1,44 @@
-CREATE TABLE DimCptHcpcs (
-    cpt_id INT IDENTITY(1,1) PRIMARY KEY,
-    code VARCHAR(32) NOT NULL UNIQUE,
-    short_description VARCHAR(128),
-    long_description VARCHAR(2048)
+- Creating Dimension Table for CPT/HCPCS Codes
+CREATE TABLE different_states_hospital_price.DimCptHcpcs (
+    cpt_id INT64 NOT NULL,
+    code STRING,
+    short_description STRING,
+    long_description STRING
+) OPTIONS(
+    description="Dimension table for CPT/HCPCS Codes"
 );
 
-CREATE TABLE DimHospitals (
-    hospital_id INT IDENTITY(1,1) PRIMARY KEY,
-    npi_number CHAR(16) NOT NULL UNIQUE,
-    name VARCHAR(256),
-    url VARCHAR(512),
-    street_address VARCHAR(512),
-    city VARCHAR(64),
-    state VARCHAR(32),
-    zip_code VARCHAR(16)
+-- Creating Dimension Table for Hospitals
+CREATE TABLE different_states_hospital_price.DimHospitals (
+    hospital_id INT64 NOT NULL,
+    npi_number INT64,
+    name STRING,
+    url STRING,
+    street_address STRING,
+    city STRING,
+    state STRING,
+    zip_code STRING
+) OPTIONS(
+    description="Dimension table for Hospitals"
 );
 
-CREATE TABLE DimPayer (
-    payer_id INT IDENTITY(1,1) PRIMARY KEY,
-    payer VARCHAR(128) NOT NULL UNIQUE
+-- Creating Dimension Table for Payers
+CREATE TABLE different_states_hospital_price.DimPayer (
+    payer_id INT64 NOT NULL,
+    payer STRING
+) OPTIONS(
+    description="Dimension table for Payers"
 );
 
-CREATE TABLE FactPrices (
-    price_id INT IDENTITY(1,1) PRIMARY KEY,
-    cpt_id INT,
-    hospital_id INT,
-    payer_id INT,
-    price DECIMAL(18,2),
-    FOREIGN KEY (cpt_id) REFERENCES DimCptHcpcs(cpt_id),
-    FOREIGN KEY (hospital_id) REFERENCES DimHospitals(hospital_id),
-    FOREIGN KEY (payer_id) REFERENCES DimPayer(payer_id)
+-- Creating Fact Table for Prices
+CREATE TABLE different_states_hospital_price.FactPrices (
+    fact_id INT64 NOT NULL,
+    cpt_id INT64,
+    hospital_id INT64,
+    payer_id INT64,
+    price NUMERIC
+) PARTITION BY DATE(_PARTITIONTIME)
+CLUSTER BY cpt_id, hospital_id, payer_id
+OPTIONS(
+    description="Fact table for Prices with partitioning and clustering"
 );
