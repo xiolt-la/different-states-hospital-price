@@ -7,4 +7,4 @@
 4) Source: dolthub database [hospital-price-transparency](https://www.dolthub.com/repositories/dolthub/hospital-price-transparency/data/master)
 5) Data dictionary in dolthub [README.md](https://www.dolthub.com/repositories/dolthub/hospital-price-transparency/doc/master/README.md) and [schema](https://www.dolthub.com/repositories/dolthub/hospital-price-transparency/data/master/cpt_hcpcs)
 6) Dimensional Modeling
-7) Tableau link: [different_state_hospital_price]([https://public.tableau.com/views/different_state_hospital_price/map?:language=zh-CN&publish=yes&:sid=&:display_count=n&:origin=viz_share_link](https://public.tableau.com/app/profile/juntian.huang/viz/different_state_hospital_price/Dashboard1?publish=yes))
+7) Tableau link: [different_state_hospital_price](https://public.tableau.com/shared/25PFXHQ3K?:display_count=n&:origin=viz_share_link)
